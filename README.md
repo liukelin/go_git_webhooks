@@ -31,6 +31,8 @@ git web hooks
     Install: 
     $ go get -u github.com/go-redis/redis
 
+    $ go build go_git_webhooks
+
 
     运行 http server：
     $ path/go_git_webhooks -server http -port 8888 
