@@ -35,12 +35,12 @@ func Server_cli(params map[string]string) {
 
 	if Rerr == nil {
 		for {
-			// err := rConn.RPsh("key", "value").Err()
-			d, err := RConn.LPop(Key).Result()
+			// err := rConn.RPsh("RedisKey", "value").Err()
+			d, err := RConn.LPop(RedisKey).Result()
 
 			// 判断重连
 			if err == redis.Nil {
-				// fmt.Println(" does not exists:", Key)
+				// fmt.Println(" does not exists:", RedisKey)
 
 			} else if err != nil {
 				fmt.Println("redis LPop err:", err, reflect.TypeOf(err), ".\n")
@@ -56,6 +56,7 @@ func Server_cli(params map[string]string) {
 					v, ok := dMaps["shell"]
 					if ok {
 
+						// 异步处理
 						fmt.Println("Run shell:", v, "\n")
 						err := run_shell(v)
 						if err != nil {
@@ -67,7 +68,7 @@ func Server_cli(params map[string]string) {
 				}
 			}
 
-			// 阻塞
+			// 阻塞 2s
 			time.Sleep(time.Second * 2)
 
 			// 非阻塞

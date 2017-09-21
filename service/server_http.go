@@ -11,7 +11,7 @@ import (
 	"net/http"
 	// "os"
 	"github.com/go-redis/redis"
-	"reflect"
+	// "reflect"
 	"strconv"
 	// "strings"
 )
@@ -53,7 +53,7 @@ func Server_http(params map[string]string) {
 }
 
 /**
- * [web_server_action description]
+ * [web_server_action 请求业务处理]
  * @param  {[type]} w http.ResponseWriter [description]
  * @param  {[type]} r *http.Request       [description]
  * @return {[type]}   [description]
@@ -62,40 +62,37 @@ func server_http_action(w http.ResponseWriter, r *http.Request) {
 	// 解析参数, 默认是不会解析的
 	r.ParseForm()
 
-	/**
-	fmt.Println("request_map:", r.Form)
-	fmt.Println("path:", r.URL.Path)
-	fmt.Println("scheme:", r.URL.Scheme)
-	fmt.Println("url_long:", r.Form["url_long"])
-	**/
-	// body := make(map[string]string)
-	// for k, v := range r.Form {
-	// 	fmt.Println("key:", k)
-	// 	fmt.Println("val:", strings.Join(v, ";"))
-	// }
-
-	// fmt.Println(r.Form["data"], r.Form["branch"], r.Form["c"])
-	// msg := ""
-
 	// d := r.Form["d"]
 	d := r.FormValue("d")
+	key := r.FormValue("sign")
+	if len(Params["signKey"]) > 0 && Params["signKey"] != key {
 
-	fmt.Println("body d:", d, reflect.TypeOf(d))
+		fmt.Fprintf(w, "signKey error.")
 
-	err := RConn0.RPush(Key, d).Err()
+	} else {
 
-	// 判断重连
-	if err != nil {
-		redisdb, err0 := strconv.Atoi(Params["redisdb"])
-		if err0 != nil {
-			redisdb = 0
-		}
-		RConn0, Rerr0 = RedisClient(Params["redishost"], Params["redispass"], redisdb)
-		if Rerr0 == nil {
-			fmt.Println("RedisClient connection error2.\n")
+		fmt.Println("body:", r.Form)
+
+		err := RConn0.RPush(RedisKey, d).Err()
+
+		// 判断重连
+		if err != nil {
+			redisdb, err0 := strconv.Atoi(Params["redisdb"])
+			if err0 != nil {
+				redisdb = 0
+			}
+			RConn0, Rerr0 = RedisClient(Params["redishost"], Params["redispass"], redisdb)
+			if Rerr0 == nil {
+				fmt.Println("RedisClient connection error2.\n")
+				fmt.Fprintf(w, "RedisClient connection error2.")
+			} else {
+				fmt.Println("redis RPush error:", err)
+				fmt.Fprintf(w, "redis RPush error.")
+			}
+		} else {
+			fmt.Fprintf(w, "success.")
+			// io.WriteString(w, "success.")
 		}
 	}
 
-	// 这个写入到w输出到客户端
-	fmt.Fprintf(w, "return:", err)
 }

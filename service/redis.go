@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-var Key = "go_git_webhooks_key"
+var RedisKey = "go_git_webhooks_key"
 
 func RedisClient(addr string, password string, db int) (r *redis.Client, err error) {
 	rClient := redis.NewClient(&redis.Options{
