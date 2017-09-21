@@ -76,9 +76,17 @@ git web hooks
     /bin/sh cd /var/www/obj/ && git pull
 
 
-    对于shell值：为了安全，可以做下命令过滤
+总结:  
 
+    优化项：
+        对于shell值，为了安全，可以做下命令过滤
+        server cli 是消费队列数据，消费模式下单机里可以开启多个进程消费
+        server cli 执行命令可使用异步操作，
+        消费任务，可加入ACK机制（比如配合使用rabbitmq），允许消费失败归队
+        end...
 
+    代码优化：
+        and...
 
 
 
