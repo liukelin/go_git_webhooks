@@ -17,10 +17,11 @@ import (
 )
 
 var debug *bool = flag.Bool("debug", false, "Are you debug?")
-var server *string = flag.String("server", "http", "server type (http/cli) ?")
-var port *string = flag.String("port", "8888", "port ?")
+var server *string = flag.String("server", "http", "服务类型 (http/cli) ?")
+var port *string = flag.String("port", "8888", "http服务端口，8888")
 var process *string = flag.String("process", "1", "process member ?")
-var redishost *string = flag.String("redishost", "localhost:6379", "redis host ?")
+var redishost *string = flag.String("redishost", "localhost:6379", "redis ip:端口 ?")
+var signKey *string = flag.String("sign", "", "http请求鉴权key, 设置后请求需要验证 &sign=key")
 
 // var rConn *redis.Client
 
@@ -43,6 +44,7 @@ func main() {
 	params["redishost"] = *redishost
 	params["redispass"] = ""
 	params["redisdb"] = "0"
+	params["signKey"] = *signKey
 
 	/**
 	if *server == "cli_server" {
