@@ -48,7 +48,22 @@ func Server_cli(params map[string]string) {
 
 			} else {
 				if len(d) > 0 {
-					fmt.Println("redis LPop:", reflect.TypeOf(d), d, int(time.Second))
+					fmt.Println("redis LPop:", reflect.TypeOf(d), d, int(time.Second), ".\n")
+
+					dMaps := loads_json(d)
+
+					// 执行shell
+					v, ok := dMaps["shell"]
+					if ok {
+
+						fmt.Println("Run shell:", v, "\n")
+						err := run_shell(v)
+						if err != nil {
+							fmt.Println(err, ".\n")
+						} else {
+							fmt.Println("success.\n")
+						}
+					}
 				}
 			}
 
@@ -100,18 +115,19 @@ func loads_json(jsonStr string) (maps map[string]string) {
 			maps_[k] = strconv.FormatFloat(vv, 'E', -1, 32)
 
 		case []interface{}:
+			// 数组字典
 			// fmt.Println(k, "is an array:")
 			// for i, u := range vv {
 			// 	fmt.Println(i, u)
 			// }
 		case map[string]interface{}:
+			// 字典字典
 
 		default:
 			// fmt.Println(k, "is of a type I don't know how to handle")
 		}
 	}
-
-	fmt.Println(maps_)
+	// fmt.Println(maps_)
 	return maps_
 }
 
@@ -134,18 +150,16 @@ func loads_json(jsonStr string) (maps map[string]string) {
  * 执行shell命令
  */
 func run_shell(shell string) (msg error) {
-	cmd := exec.Command("/bin/sh", "-c", "ping 127.0.0.1")
+	cmd := exec.Command("/bin/sh", "-c", shell)
 	_, err := cmd.Output()
 	if err != nil {
-		panic(err.Error())
+		// panic(err.Error())
 	}
-
 	if err := cmd.Start(); err != nil {
-		panic(err.Error())
+		// panic(err.Error())
 	}
-
 	if err := cmd.Wait(); err != nil {
-		panic(err.Error())
+		// panic(err.Error())
 	}
-	return nil
+	return err
 }
