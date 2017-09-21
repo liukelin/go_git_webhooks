@@ -1,15 +1,30 @@
-    git web hooks 脚本md
+git web hooks
 
     1、搭建一个web server来接收web hooks的http请求
 
     2、将接收到的请求push到消息队列
 
-    3、搭建一个自动运行脚本，异步处理接收的请求
+    3、搭建一个自动运行脚本，异步处理接收的请求，在服务端执行命令行
 
 
     http request -> web server -> message queue  ->cli server 1
                                                  -> cli server 2
                                                  -> cli server ...
+
+    4、这里的单机案例，如果多机需要执行的话，可用rabbitmq 队列的订阅模式，在各个机器运行 -server cli 服务
+
+    
+## 目录结构
+
+~~~
+
+├─service/              处理方法
+│  ├─redis.go           redis操作类
+│  ├─server_cli.go      脚本运行文件
+│  └─server_http.go     http服务文件
+└─main.go               入口文件
+
+~~~
 
 
     下载安装包（此操作将包安装在gopath/src 下）
@@ -57,6 +72,9 @@
 
     相当于:
     /bin/sh cd /var/www/obj/ && git pull
+
+
+    对于shell值：为了安全，可以做下命令过滤
 
 
 
