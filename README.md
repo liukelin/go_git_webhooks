@@ -34,15 +34,12 @@ git web hooks
     $ go build go_git_webhooks
 
 
-    运行 http server：
-    $ path/go_git_webhooks -server http -port 8888 
+    运行 http server： （为了防止恶意请求，加一个sign key验证 http请求合法性。）
+    $ path/go_git_webhooks -server http -port 8888 -sign 123456
 
     运行 cli server：
     $ path/go_git_webhooks -server cli
 
-
-    为了防止恶意请求，可以加一个sign key验证 http请求合法性。
-    $ path/go_git_webhooks -server http -port 8888 -sign 123456
 
     更多参数
     $ path/go_git_webhooks -help
@@ -77,6 +74,8 @@ git web hooks
 
 
 总结:  
+    
+    延伸下去，就是个分布式任务调度系统。
 
     优化项：
         对于shell值，为了安全，可以做下命令过滤
