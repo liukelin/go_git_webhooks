@@ -72,6 +72,11 @@ git web hooks
     相当于:
     /bin/sh cd /var/www/obj/ && git pull
 
+    也可以将参数d的值base64_encode后传递：
+    curl -XGET http://webhooks.liukelin.top?sign=123456&d=eyJzaGVsbCI6ImNkIC92YXIvd3d3L29iai8gJiYgZ2l0IHB1bGwifQ==
+
+    {"shell":"cd /var/www/object && expect /var/log/web_hooks/git_shell.exp"}
+    {"shell":"cd /var/www/object2 && expect /var/log/web_hooks/git_shell.exp"}
 
 总结:  
     
