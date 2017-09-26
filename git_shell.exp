@@ -1,0 +1,6 @@
+#!/usr/bin/expect
+set timeout 30
+spawn git pull
+expect "Enter passphrase for key '/home/deploy/.ssh/id_rsa':"
+send "password\r"
+interact
