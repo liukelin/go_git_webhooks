@@ -46,15 +46,6 @@ func main() {
 	params["redisdb"] = "0"
 	params["signKey"] = *signKey
 
-	/**
-	if *server == "cli_server" {
-		cli_server(*process)
-	} else if *server == "web_server" {
-		web_server(*port)
-	} else {
-		web_server(*port)
-	}**/
-
 	switch *server {
 
 	case "cli":
@@ -71,4 +62,12 @@ func main() {
 		fmt.Println("your debug is:", debug, "\n")
 		// fmt.Println("redis:", rClient, "\n")
 	}
+}
+
+/**
+ * [load_json_conf 加载获取配置]
+ * @return {[type]} [description]
+ */
+func load_json_conf() {
+
 }
