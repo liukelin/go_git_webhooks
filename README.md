@@ -11,7 +11,7 @@ git web hooks
                                                  -> cli server 2
                                                  -> cli server ...
 
-    4、这里的单机案例，如果多机需要执行的话，可用rabbitmq 队列的订阅模式，在各个机器运行 -server cli 服务
+    4、这里的单机案例，如果多机需要执行的话，可选用Redis发布/订阅 或者 可用rabbitmq 队列的订阅模式，在各个机器运行 -server cli 服务
 
     
 ## 目录结构
@@ -35,10 +35,14 @@ git web hooks
 
 
     运行 http server： （为了防止恶意请求，加一个sign key验证 http请求合法性。）
-    $ path/go_git_webhooks -server http -port 8888 -sign 123456
+    $ path/go_git_webhooks -server=http -port=8888 -sign=123456
 
     运行 cli server：
-    $ path/go_git_webhooks -server cli
+    $ path/go_git_webhooks -server=cli
+
+
+    后台运行：
+    nohup path/go_git_webhooks -server=cli > /var/log/cli_$(date +\%Y-\%m-\%d).log 2>&1 &
 
 
     更多参数

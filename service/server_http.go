@@ -43,11 +43,13 @@ func Server_http(params map[string]string) {
 
 		fmt.Println("your portStr is:", portStr, "\n")
 
+		// mux := http.NewServeMux()
+		// err := http.ListenAndServe(portStr, mux)
 		err := http.ListenAndServe(portStr, nil)
-
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
+		// go mux.Run()
 	}
 	fmt.Println("RedisClient connection error.\n")
 }
