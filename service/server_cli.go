@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"os/exec"
 	"reflect"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -35,88 +36,91 @@ func Server_cli(params map[string]string) {
 	RConn, Rerr = RedisClient(params["redishost"], params["redispass"], redisdb)
 
 	if Rerr == nil {
-		go func() {
-			for {
-				// err := rConn.RPsh("RedisKey", "value").Err()
-				d, err := RConn.LPop(RedisKey).Result()
 
-				// 判断重连
+		// 按CPU核数 设置并行数量
+		runtime.GOMAXPROCS(runtime.NumCPU())
+
+		for {
+			// err := rConn.RPsh("RedisKey", "value").Err()
+			d, err := RConn.LPop(RedisKey).Result()
+
+			// fmt.Println(time.Now(), " Lpop.")
+
+			// 判断重连
+			if err != nil {
 				if err == redis.Nil {
-					fmt.Println(time.Now(), " does not exists:", err)
-
-				} else if err != nil {
-					fmt.Println("redis LPop err:", err, reflect.TypeOf(err), ".\n")
-					RConn, Rerr = RedisClient(params["redishost"], params["redispass"], redisdb)
-
+					// fmt.Println(time.Now(), " does not exists:", err)
 				} else {
-					if len(d) > 0 {
-
-						shell := ""
-						// base64_decode
-						decodeBytes, errBase := base64.StdEncoding.DecodeString(d)
-						if errBase != nil {
-							shell = d
-						} else {
-							shell = string(decodeBytes)
-						}
-
-						fmt.Println(time.Now(), " - redis LPop:", reflect.TypeOf(d), d, int(time.Second), ".\n")
-
-						dMaps := loads_json(shell)
-
-						v, ok := dMaps["shell"]
-						if ok {
-
-							fmt.Println("Run shell:", v, "\n")
-							// 执行shell
-							go func() {
-								err := run_shell(v)
-								if err != nil {
-									fmt.Println(err, ".\n")
-								} else {
-									fmt.Println("success.\n")
-								}
-							}()
-							/**
-													err := run_shell(v)
-													if err != nil {
-														fmt.Println(err, ".\n")
-													} else {
-													    fmt.Println("success.\n")
-													}
-							                        // 异步处理(test)
-													                        **/
-						}
-					}
+					fmt.Println(time.Now(), "Redis connection error:", err, reflect.TypeOf(err), ".\n")
+					RConn, Rerr = RedisClient(params["redishost"], params["redispass"], redisdb)
 				}
 
-				// 阻塞 2s
-				// time.Sleep(time.Second * 2)
-				// time.Sleep(time.Second)
-				// time.Sleep(1000 * time.Millisecond)
-				time.Sleep(1e9) // sleep one second
+				//将CPU时间片让给其它goroutine
+				// runtime.Gosched()
 
-				// 非阻塞
-				// time.After(time.Second + 10)
+			} else {
+				if len(d) > 0 {
+					fmt.Println(time.Now(), " - redis LPop:", reflect.TypeOf(d), d, int(time.Second), ".\n")
+					// defer RConn.Close()
+					go func() {
+						ack := consu_data(d)
+						fmt.Println(time.Now(), " results:", ack)
+					}()
+				}
 			}
-		}()
 
-		// timeout := make(chan bool, 1)
-		// go func() {
-		// 	time.Sleep(1e9) // sleep one second
-		// 	timeout <- true
-		// }()
-		// ch := make(chan int)
-		// select {
-		// case <-ch:
-		// case <-timeout:
-		// 	fmt.Println("timeout!")
-		// }
+			// 阻塞 2s
+			// time.Sleep(time.Second * 2)
+			// time.Sleep(time.Second)
+			// time.Sleep(1000 * time.Millisecond)
+			time.Sleep(1e9) // sleep one second
+
+			// 非阻塞
+			// time.After(time.Second + 10)
+			continue
+		}
 
 	} else {
-		fmt.Println("RedisClient connection error.\n")
+		fmt.Println("Redis connection error.\n")
 	}
 
+}
+
+/**
+ * [consu_data 消费数据]
+ * @param  {[type]} d string)       (ack bool [description]
+ * @return {[type]}      [description]
+ */
+func consu_data(d string) (ack bool) {
+
+	shell := ""
+	// base64_decode
+	decodeBytes, errBase := base64.StdEncoding.DecodeString(d)
+	if errBase != nil {
+		shell = d
+	} else {
+		shell = string(decodeBytes)
+	}
+
+	dMaps := loads_json(shell)
+	v, ok := dMaps["shell"]
+	if ok {
+		fmt.Println("Run shell:", v, "\n")
+		// 执行shell
+		go func() {
+			err := run_shell(v)
+			if err != nil {
+				fmt.Println(err, ".\n")
+			} else {
+				fmt.Println("success.\n")
+			}
+		}()
+		// 异步处理(test)
+
+		return true
+	}
+
+	return false
 }
 
 /**
