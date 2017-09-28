@@ -198,9 +198,11 @@ func run_shell(shell string) (msg error) {
 	cmd := exec.Command("/bin/sh", "-c", shell)
 	_, err := cmd.Output()
 	if err != nil {
+		return err
 		// panic(err.Error())
 	}
 	if err := cmd.Start(); err != nil {
+		return err
 		// panic(err.Error())
 	}
 	if err := cmd.Wait(); err != nil {
