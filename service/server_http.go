@@ -14,6 +14,7 @@ import (
 	// "reflect"
 	"strconv"
 	// "strings"
+	"time"
 )
 
 var RConn0 *redis.Client
@@ -73,7 +74,7 @@ func server_http_action(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		fmt.Println("body:", r.Form)
+		fmt.Println(time.Now(), "body:", r.Form)
 
 		err := RConn0.RPush(RedisKey, d).Err()
 
