@@ -112,7 +112,7 @@ func consu_data(d string) (ack bool) {
 			if err != nil {
 				fmt.Println(out, err, ".\n")
 			} else {
-				fmt.Println("success.\n")
+				fmt.Println(out, "success.\n")
 			}
 		}()
 		// 异步处理(test)
