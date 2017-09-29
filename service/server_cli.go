@@ -108,9 +108,9 @@ func consu_data(d string) (ack bool) {
 		fmt.Println("Run shell:", v, "\n")
 		// 执行shell
 		go func() {
-			err := run_shell(v)
+			out, err := run_shell(v)
 			if err != nil {
-				fmt.Println(err, ".\n")
+				fmt.Println(out, err, ".\n")
 			} else {
 				fmt.Println("success.\n")
 			}
@@ -194,19 +194,20 @@ func loads_json(jsonStr string) (maps map[string]string) {
 /**
  * 执行shell命令
  */
-func run_shell(shell string) (msg error) {
+func run_shell(shell string) (out []byte, msg error) {
 	cmd := exec.Command("/bin/sh", "-c", shell)
-	_, err := cmd.Output()
+	// err := cmd.Output()
+	out_, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return out_, err
 		// panic(err.Error())
 	}
 	if err := cmd.Start(); err != nil {
-		return err
+		// return out, err
 		// panic(err.Error())
 	}
 	if err := cmd.Wait(); err != nil {
 		// panic(err.Error())
 	}
-	return err
+	return out_, err
 }
