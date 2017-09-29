@@ -109,10 +109,12 @@ func consu_data(d string) (ack bool) {
 		// 执行shell
 		go func() {
 			out, err := run_shell(v)
+
+			fmt.Println(out, "\n")
 			if err != nil {
-				fmt.Println(out, err, ".\n")
+				fmt.Println(err, ".\n")
 			} else {
-				fmt.Println(out, "success.\n")
+				fmt.Println("success.\n")
 			}
 		}()
 		// 异步处理(test)
